@@ -52,7 +52,9 @@ def playerMove(player, currentCard):
             currentCardValue = int(currentCardValue)
 
     player.sumOfCards += currentCardValue
-    print(f'{player.name}s hand is: {player.hand}')
+    # number = player.hand.get
+    # type = player.hand[len(player.hand)][1]
+    print(f'{player.name} hand is: {player.hand}')
     timeOut(0.5)
 
 
@@ -121,7 +123,6 @@ timeOut(1.5)
 while play:
     whosTurn(dealer)
     playerMove(dealer, hit(ourDeck))
-    # timeOut(0.1)
     playersSumOfCards(dealer)
     if checkScoreHigherThan21(dealer):
         playerLost(dealer)
