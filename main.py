@@ -42,6 +42,9 @@ def checkScoreHigherThan21(player):
     return False
 
 
+def contuniePlaying():
+    return bool(input('Quit game - 0 | Continue - 1 : '))
+
 # player move
 play = True
 print('---------------------------------------')
@@ -55,7 +58,8 @@ while play:
         pass
     else:
         print(f'{dealer.name} has lost with total card of: {dealer.sumOfCards}')
-        play = False
+        if not contuniePlaying():
+            play = False
     if play:
         print(f'\nPlayer sum of cards is:  {player1.sumOfCards} ')
         action = input('Enter 1 - Hit me | Enter 2 - Pass:  ')
@@ -65,7 +69,7 @@ while play:
             if checkScoreHigherThan21(player1):
                 print(f'{player1.name} has lost with total card of: {player1.sumOfCards}')
                 player1.score += 1
-                input('Quit game - 0 | Continue - 1')
-                play = False
+                if not contuniePlaying():
+                    play = False
         elif int(action) == 2:
             pass

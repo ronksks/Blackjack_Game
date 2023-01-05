@@ -35,6 +35,7 @@ class Deck:
         self.numOfCards = numOfCards
 
     def shuffel_deck(self):
+
         pass
 
     # reseting deck
