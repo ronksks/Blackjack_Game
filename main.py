@@ -10,8 +10,29 @@ def timeOut(sec):
     time.sleep(sec)
 
 
+def welcomeMessage():
+    print('---------------------------------------')
+    print('Welcome to my Blackjack game, Good luck!')
+    print('---------------------------------------')
+
+
 def startGame():
     return int(input(('To start game, press:1  ')))
+
+
+###### creating objects of users and deck #################
+def creatingPlayer(name):
+    if name == 'Dealer':
+        return Player(name)
+    return Player(input('Player name: '))
+
+
+def resetDeck():
+    return Deck
+
+
+def whosTurn(player):
+    print(f'{player.name} turn')
 
 
 def hit(ourDeck):
@@ -19,19 +40,55 @@ def hit(ourDeck):
     return my_card
 
 
-def store_data(player, currentCard):
+def playerMove(player, currentCard):
     player.hand.append(currentCard)
-    # currentCardValue = currentCard[0]
-    if currentCard[0] == 'Ace':
-        currentCardValue = int(input('You got Ace! use as 10 or 1? '))
+    currentCardValue = currentCard[0]
+    if currentCardValue == 'Ace':
+        currentCardValue = int(input('You got Ace! use as 11 or 1? '))
     else:
-        if len(currentCard[0]) > 2:
+        if len(currentCardValue) > 1:
             currentCardValue = 10
         else:
-            currentCardValue = int(currentCard[0])
+            currentCardValue = int(currentCardValue)
+
     player.sumOfCards += currentCardValue
-    print(f'{player.name}s hand is: {player.hand} Total sum: {player.sumOfCards}')
+    print(f'{player.name}s hand is: {player.hand}')
     timeOut(0.5)
+
+
+def playersSumOfCards(player):
+    print(f'{player.name} sum of cards is: {player.sumOfCards}\n')
+
+
+def playerLost(player):
+    print(f'{player.name} has lost with total card of: {player.sumOfCards}\n')
+
+
+def addScore(player):
+    player.score += 1
+
+
+def hitOrPass():
+    return int(input('Enter 1 - Hit me | Enter 0 - Pass:  '))
+
+
+def resetGame(player, dealer, deck):
+    player.sumOfCards = 0
+    player.hand.clear()
+    dealer.sumOfCards = 0
+    dealer.hand.clear()
+    deck = Deck
+
+
+def currentScore(player, dealer):
+    playerScore = player.score
+    dealerScore = dealer.score
+    if playerScore > dealerScore:
+        print(f'{dealerScore}:{playerScore}  {player.name} is leading with the score of {playerScore}')
+    else:
+        print(f'{dealerScore}:{playerScore}  {dealer.name} is leading with the score of {dealerScore}')
+    if playerScore == dealerScore:
+        print(f'{dealerScore}:{playerScore}  Its a draw between {dealer.name} and {player.name}')
 
 
 def checkScoreHigherThan21(player):
@@ -42,68 +99,55 @@ def checkScoreHigherThan21(player):
 
 
 def continuePlaying():
-    return bool(input('Quit game - 0 | Continue - 1 : '))
+    return int(input('Continue - 1 | Quit game - 0 : '))
 
 
-def setUpGame():
-    pass
+def stopGame(play):
+    print('Thank you for playing, see you next time.')
+    return 0
 
 
-def welcomeMessage():
-    print('---------------------------------------')
-    print('Welcome to my Blackjack game, Good luck!')
-    print('---------------------------------------')
-
-###### creating objects of users and deck #################
-def creatingPlayer(name):
-    if name == 'Dealer':
-        return Player(name)
-    return Player(input('Player name: '))
-def creatingDeck():
-    return Deck
-
-
-game = setUpGame()
-print(game)
-
-
-################################## Welcom message #####################################################################################
+################################## Welcom message and setting variables###############################################################
 welcomeMessage()
 play = startGame()
 player1 = creatingPlayer('')
 dealer = creatingPlayer('Dealer')
-ourDeck = creatingDeck()
-
-def playersSumOfCards(player):
-    print(f'{player.name} sum of card is: {player.sumOfCards}\n')
-
-def playerLost(player):
-    print(f'{player.name} has lost with total card of: {player.sumOfCards}\n')
-
+ourDeck = resetDeck()
 
 print('Shuffling  deck . . .\n')
-timeOut(2)
+timeOut(1.5)
 ################################## Game started #####################################################################################
+
 while play:
-    store_data(dealer, hit(ourDeck))
+    whosTurn(dealer)
+    playerMove(dealer, hit(ourDeck))
+    # timeOut(0.1)
     playersSumOfCards(dealer)
-    # print(f'Dealers sum of card is: {dealer.sumOfCards}')
-    if not checkScoreHigherThan21(dealer):
-        pass
-    else:
+    if checkScoreHigherThan21(dealer):
         playerLost(dealer)
+        addScore(player1)
         if not continuePlaying():
-            play = False
-    if play:
+            play = stopGame(play)
+        if play:
+            resetGame(player1, dealer, ourDeck)
+            currentScore(player1, dealer)
+    # continue playing next turn
+    else:
+        whosTurn(player1)
         playersSumOfCards(player1)
-        action = input('Enter 1 - Hit me | Enter 2 - Pass:  ')
-        if int(action) == 1:
-            store_data(player1, hit(ourDeck))
-            print('\n')
+        action = hitOrPass()
+        # if user decide to Hit me
+        if action:
+            playerMove(player1, hit(ourDeck))
             if checkScoreHigherThan21(player1):
                 playerLost(player1)
-                player1.score += 1
+                addScore(dealer)
+                # if user decide to keep on playing
                 if not continuePlaying():
-                    play = False
-        elif int(action) == 2:
+                    play = stopGame(play)
+                if play:
+                    resetGame(player1, dealer, ourDeck)
+                    currentScore(player1, dealer)
+        # user pass card
+        elif not action:
             pass

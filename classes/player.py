@@ -1,3 +1,4 @@
+
 class Player:
 
     def __init__(self, name, score=0, sumOfCards=0):
@@ -12,4 +13,3 @@ class Player:
 
     def player_move_hit(self):
         pass
-
