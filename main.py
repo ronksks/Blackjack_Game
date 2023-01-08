@@ -10,24 +10,24 @@ def timeOut(sec):
     time.sleep(sec)
 
 
-def welcomeMessage():
+def welcome_message():
     print('---------------------------------------')
     print('Welcome to my Blackjack game, Good luck!')
     print('---------------------------------------')
 
 
-def startGame():
+def start_game():
     return int(input(('To start game, press:1  ')))
 
 
 ###### creating objects of users and deck #################
-def creatingPlayer(name):
+def creating_player(name):
     if name == 'Dealer':
         return Player(name)
     return Player(input('Player name: '))
 
 
-def resetDeck():
+def reset_deck():
     return Deck
 
 
@@ -35,38 +35,48 @@ def whosTurn(player):
     print(f'{player.name} turn')
 
 
-def hit(ourDeck):
-    my_card = ourDeck.extracingCard(ourDeck.cards, ourDeck.extractedCards, ourDeck.cardsType, ourDeck.cardsValue)
+def hit(our_deck):
+    my_card = our_deck.extracingCard(our_deck.cards, our_deck.extractedCards, our_deck.cardsType, our_deck.cardsValue)
     return my_card
 
 
-def playerMove(player, currentCard):
-    player.hand.append(currentCard)
-    currentCardValue = currentCard[0]
-    if currentCardValue == 'Ace':
-        currentCardValue = int(input('You got Ace! use as 11 or 1? '))
+def player_move(player, current_card):
+    player.hand.append(current_card)
+    current_card_value = current_card[0]
+    if current_card_value == 'Ace':
+        current_card_value = player_got_ace(player)
     else:
-        if len(currentCardValue) > 1:
-            currentCardValue = 10
+        if len(current_card_value) > 1:
+            current_card_value = 10
         else:
-            currentCardValue = int(currentCardValue)
+            current_card_value = int(current_card_value)
 
-    player.sumOfCards += currentCardValue
+    player.sumOfCards += current_card_value
     # number = player.hand.get
     # type = player.hand[len(player.hand)][1]
     print(f'{player.name} hand is: {player.hand}')
     timeOut(0.5)
 
 
-def playersSumOfCards(player):
+def player_got_ace(player):
+    if (player.name == 'Dealer'):
+        if player.sumOfCards <= 10:
+            return 11
+        else:
+            return 1
+    else:
+        return int(input('You got Ace! use as 11 or 1? '))
+
+
+def players_sum_of_cards(player):
     print(f'{player.name} sum of cards is: {player.sumOfCards}\n')
 
 
-def playerLost(player):
+def player_lost(player):
     print(f'{player.name} has lost with total card of: {player.sumOfCards}\n')
 
 
-def addScore(player):
+def add_score(player):
     player.score += 1
 
 
@@ -74,7 +84,7 @@ def hitOrPass():
     return int(input('Enter 1 - Hit me | Enter 0 - Pass:  '))
 
 
-def resetGame(player, dealer, deck):
+def reset_game(player, dealer, deck):
     player.sumOfCards = 0
     player.hand.clear()
     dealer.sumOfCards = 0
@@ -82,73 +92,131 @@ def resetGame(player, dealer, deck):
     deck = Deck
 
 
-def currentScore(player, dealer):
-    playerScore = player.score
-    dealerScore = dealer.score
-    if playerScore > dealerScore:
-        print(f'{dealerScore}:{playerScore}  {player.name} is leading with the score of {playerScore}')
+def current_score(player, dealer):
+    player_score = player.score
+    dealer_score = dealer.score
+    if player_score > dealer_score:
+        # print(f'{dealer_score}:{player_score}  {player.name} is leading with the score of {player_score}')
+        print(f'{dealer_score}:{player_score}  {player.name} is leading with the score of {player_score}')
     else:
-        print(f'{dealerScore}:{playerScore}  {dealer.name} is leading with the score of {dealerScore}')
-    if playerScore == dealerScore:
-        print(f'{dealerScore}:{playerScore}  Its a draw between {dealer.name} and {player.name}')
+        print(f'{dealer_score}:{player_score}  {dealer.name} is leading with the score of {dealer_score}')
+    if player_score == dealer_score:
+        print(f'{dealer_score}:{player_score}  Its a draw between {dealer.name} and {player.name}')
 
 
-def checkScoreHigherThan21(player):
+def check_score_higher_than_21(player):
     timeOut(1)
     if player.sumOfCards > 21:
-        return True
+        return 1
+    if player.sumOfCards == 21:
+        return 2
     return False
 
 
-def continuePlaying():
+def continue_playing():
     return int(input('Continue - 1 | Quit game - 0 : '))
 
 
-def stopGame(play):
+def stop_game(play):
     print('Thank you for playing, see you next time.')
     return 0
 
 
-################################## Welcom message and setting variables###############################################################
-welcomeMessage()
-play = startGame()
-player1 = creatingPlayer('')
-dealer = creatingPlayer('Dealer')
-ourDeck = resetDeck()
+def take_turn(player):
+    whosTurn(player)
+    if player.name == 'Dealer':
+        player_move(player, hit(our_deck))
+    else:
+        pass
+    players_sum_of_cards(player)
+
+
+def take_hit(player, deck):
+    player_move(player, hit(deck))
+
+
+def blackjack(player):
+    print(f'{player.name} got blackjack!')
+
+
+def play_game(play):
+    while play:
+        take_turn(dealer)
+        if check_score_higher_than_21(dealer) == 1:
+            player_lost(dealer)
+            add_score(player1)
+            if not continue_playing():
+                play = stop_game(play)
+            if play:
+                reset_game(player1, dealer, our_deck)
+                current_score(player1, dealer)
+            elif check_score_higher_than_21(dealer) == 2:
+                blackjack(dealer)
+                player_lost(player1)
+                add_score(dealer)
+        else:
+            take_turn(player1)
+            action = hitOrPass()
+            if action:
+                take_hit(player1, our_deck)
+                if check_score_higher_than_21(player1) == 1:
+                    player_lost(player1)
+                    add_score(dealer)
+                    if not continue_playing():
+                        play = stop_game(play)
+                    if play:
+                        reset_game(player1, dealer, our_deck)
+                        current_score(player1, dealer)
+                elif check_score_higher_than_21(player1) == 2:
+                    blackjack(player1)
+                    player_lost(dealer)
+                    add_score(player1)
+
+
+
+################################## Welcome message and setting variables###############################################################
+welcome_message()
+play = start_game()
+player1 = creating_player('')
+dealer = creating_player('Dealer')
+our_deck = reset_deck()
 
 print('Shuffling  deck . . .\n')
 timeOut(1.5)
+play_game(play)
+
 ################################## Game started #####################################################################################
 
-while play:
-    whosTurn(dealer)
-    playerMove(dealer, hit(ourDeck))
-    playersSumOfCards(dealer)
-    if checkScoreHigherThan21(dealer):
-        playerLost(dealer)
-        addScore(player1)
-        if not continuePlaying():
-            play = stopGame(play)
-        if play:
-            resetGame(player1, dealer, ourDeck)
-            currentScore(player1, dealer)
-    # continue playing next turn
-    else:
-        whosTurn(player1)
-        playersSumOfCards(player1)
-        action = hitOrPass()
-        # if user decide to Hit me
-        if action:
-            playerMove(player1, hit(ourDeck))
-            if checkScoreHigherThan21(player1):
-                playerLost(player1)
-                addScore(dealer)
-                # if user decide to keep on playing
-                if not continuePlaying():
-                    play = stopGame(play)
-                if play:
-                    resetGame(player1, dealer, ourDeck)
-                    currentScore(player1, dealer)
-        # user pass card
-        elif not action:
-            pass
+
+# while play:
+#     whosTurn(dealer)
+#     player_move(dealer, hit(our_deck))
+#     players_sum_of_cards(dealer)
+#     if check_score_higher_than_21(dealer):
+#         player_lost(dealer)
+#         add_score(player1)
+#         if not continue_playing():
+#             play = stop_game(play)
+#         if play:
+#             reset_game(player1, dealer, our_deck)
+#             current_score(player1, dealer)
+#     # continue playing next turn
+#     else:
+#         whosTurn(player1)
+#         players_sum_of_cards(player1)
+#         action = hitOrPass()
+#         # if user decide to Hit me
+#         if action:
+#             player_move(player1, hit(our_deck))
+#             if check_score_higher_than_21(player1):
+#                 player_lost(player1)
+#                 add_score(dealer)
+#                 # if user decide to keep on playing
+#                 if not continue_playing():
+#                     play = stop_game(play)
+#                 if play:
+#                     reset_game(player1, dealer, our_deck)
+#                     current_score(player1, dealer)
+#         # user pass card
+#         elif not action:
+#             pass
