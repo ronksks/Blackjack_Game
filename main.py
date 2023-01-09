@@ -32,7 +32,7 @@ def reset_deck():
 
 
 def whosTurn(player):
-    print(f'{player.name} turn')
+    print(f'{player.name} turn:')
 
 
 def hit(our_deck):
@@ -105,7 +105,7 @@ def current_score(player, dealer):
 
 
 def check_score_higher_than_21(player):
-    timeOut(1)
+    timeOut(0.5)
     if player.sumOfCards > 21:
         return 1
     if player.sumOfCards == 21:
@@ -136,7 +136,22 @@ def take_hit(player, deck):
 
 
 def blackjack(player):
-    print(f'{player.name} got blackjack!')
+    print(f'*** {player.name} got blackjack! ***')
+    if player.name == 'Dealer':
+        # player_lost(player1)
+        add_score(dealer)
+        reset_game(player1, dealer, our_deck)
+        current_score(player1, dealer)
+    else:
+        # player_lost(dealer)
+        add_score(player1)
+        reset_game(player1, dealer, our_deck)
+        current_score(player1, dealer)
+
+        #########################################
+
+
+
 
 
 def play_game(play):
@@ -150,10 +165,9 @@ def play_game(play):
             if play:
                 reset_game(player1, dealer, our_deck)
                 current_score(player1, dealer)
-            elif check_score_higher_than_21(dealer) == 2:
-                blackjack(dealer)
-                player_lost(player1)
-                add_score(dealer)
+        elif check_score_higher_than_21(dealer) == 2:
+            print('line 169')
+            blackjack(dealer)
         else:
             take_turn(player1)
             action = hitOrPass()
@@ -169,9 +183,7 @@ def play_game(play):
                         current_score(player1, dealer)
                 elif check_score_higher_than_21(player1) == 2:
                     blackjack(player1)
-                    player_lost(dealer)
-                    add_score(player1)
-
+                    print('line 194')
 
 
 ################################## Welcome message and setting variables###############################################################
