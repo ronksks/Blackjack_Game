@@ -43,7 +43,8 @@ extracingCard: extracts a card from the deck and removes it from the cards list<
 resetCards: resets the deck to its original state<br />
 <br />
 ### Player
-This class represents a player. It has the following attributes:
+This class represents a player. <br />
+It has the following attributes:
 
 name: a string representing the player's name<br />
 hand: a list of tuples representing the player's hand<br />
